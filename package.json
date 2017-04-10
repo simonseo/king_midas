@@ -1,0 +1,20 @@
+{
+  "name": "king_midas",
+  "version": "0.0.1",
+  "description": "A bot server that posts updated information to Facebook from Google Spreadsheet",
+  "main": "main.js",
+  "dependencies": {
+    "google-spreadsheet": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "google_spreadsheet",
+    "bot",
+    "facebook"
+  ],
+  "author": "Simon Seo",
+  "license": "UNLICENSED"
+}
