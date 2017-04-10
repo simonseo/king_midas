@@ -1,0 +1,8 @@
+{
+	"client_email" : "client@somewhere.com",
+	"private_key" : "-----BEGIN PRIVATE KEY-----\nLot of uninteresting keys\n-----END PRIVATE KEY-----\n",
+	"responseSheetId" : "12345-ABCDEfghijkLMNOQPrstuv_wxyZ",
+	"archiveSheetId" : "abcde_12345asdfQWERTYdvorak_nice",
+	"fbToken" : "MoreUninterestingKeys",
+	"fbPageId" : "1234567890"
+}
