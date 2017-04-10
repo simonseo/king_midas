@@ -4,6 +4,7 @@ var GoogleSpreadsheet = require('google-spreadsheet');
 var async = require('async');
 var FacebookApi = require('fb-node');
 var creds = require('./creds.json');
+require('heroku-self-ping')(creds.herokuAppUrl);
 
 /**
   creds for google api must be issued from https://console.developers.google.com/ as a service account

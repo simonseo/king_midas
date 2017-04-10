@@ -4,5 +4,6 @@
 	"responseSheetId" : "12345-ABCDEfghijkLMNOQPrstuv_wxyZ",
 	"archiveSheetId" : "abcde_12345asdfQWERTYdvorak_nice",
 	"fbToken" : "MoreUninterestingKeys",
-	"fbPageId" : "1234567890"
+	"fbPageId" : "1234567890",
+	"herokuAppUrl" : "https://myappurl.com/"
 }
