@@ -1,22 +1,36 @@
+'use strict'
+
 var GoogleSpreadsheet = require('google-spreadsheet');
 var async = require('async');
+var FacebookApi = require('fb-node');
+var creds = require('./creds.json');
+
+/**
+  creds for google api must be issued from https://console.developers.google.com/ as a service account
+  and the spreadsheet must be shared with email of the service account client
+  creds for fb graph api must be issued from https://developers.facebook.com
+
+  OR, if you cannot save the file locally (like on heroku) 
+  var creds_json = {
+    "client_email" : 'yourserviceaccountemailhere@google.com',
+    "private_key" : 'your long private key stuff here',
+    "responseId" : 'unique id of spreadsheet used for storing form responses',
+    "archiveId" : 'a blank document',
+    "pageToken" : 'another long private key stuff'
+  }
+*/
+
+// Set endpoint and token
+FacebookApi.endpoint = 'https://graph.facebook.com';
+FacebookApi.token = creds.fbToken;
  
 // the IDs are the unique keys that appear in the URL of Google documents
-var spreadsheetId = require('./spreadsheetId')
-var responseDoc = new GoogleSpreadsheet(spreadsheetId.response),
-    archiveDoc = new GoogleSpreadsheet(spreadsheetId.archive);
+var responseDoc = new GoogleSpreadsheet(creds.responseSheetId),
+    archiveDoc = new GoogleSpreadsheet(creds.archiveSheetId);
 var responseSheet,
     archiveSheet;
 
-// creds must be issued from https://console.developers.google.com/ as a service account
-// and the document must be shared with email of the service account client
-var creds = require('./google-drive-creds.json');
 
-// OR, if you cannot save the file locally (like on heroku) 
-// var creds_json = {
-//   client_email: 'yourserviceaccountemailhere@google.com',
-//   private_key: 'your long private key stuff here'
-// }
 
 function setup() {
   //runs once
@@ -109,6 +123,23 @@ function loop(loopPeriod) {
         for (var i = 0; i < newContent.length; i++) {
           archiveDoc.addRow(1, newContent[i], function(err) {
             if(err) { console.log(err); }
+          });
+        }
+      }
+      step();
+    },
+    function postFacebook(step) {
+      if (existsUpdate) {
+        for (var i = 0; i < newContent.length; i++) {
+          var dataOut = {};
+          dataOut.message = newContent[i][header.content];
+          var url = '/' + creds.fbPageId + '/feed';
+          FacebookApi.post(url, dataOut).then(function (data) {
+            console.log(data.json);
+          }).catch(function(e){
+            console.log(e);
+          }).finally(function(){
+            console.log('Done with the request');
           });
         }
       }
