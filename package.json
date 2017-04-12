@@ -4,7 +4,7 @@
   "description": "A bot server that posts updated information to Facebook from Google Spreadsheet",
   "main": "main.js",
   "dependencies": {
-    "fb-node": "^0.1.6",
+    "fb-node": "^0.1.8",
     "google-spreadsheet": "^2.0.3",
     "heroku-self-ping": "^1.1.3"
   },
