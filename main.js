@@ -82,9 +82,14 @@ function loop(loopPeriod) {
         'max-row' : 1,
         'return-empty' : false
       }, function(err, cells) {
-        originalHeader = [cells[0].valueForSave, cells[1].valueForSave];
-        header.timestamp = normalize(originalHeader[0]);
-        header.content = normalize(originalHeader[1]);
+        if (err) {
+          console.log(err);
+        }
+        else {
+          originalHeader = [cells[0].valueForSave, cells[1].valueForSave];
+          header.timestamp = normalize(originalHeader[0]);
+          header.content = normalize(originalHeader[1]);          
+        }
         step();
       });
     },
@@ -94,26 +99,37 @@ function loop(loopPeriod) {
         offset: 1,
         orderby: 'col1'
       }, function(err, rows) {
-        console.log('Read '+rows.length+' rows');
-        existsUpdate = !!rows.length;
-        if (existsUpdate) {
-          for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            var temp = {};
-            temp[header.timestamp] = row[header.timestamp];
-            temp[header.content] = row[header.content];
-            newContent.push(temp);
-          }
-          step();
-        } else {
-          setTimeout(step, loopPeriod); //if no update, sleep for <loopPeriod> seconds before jumping
+        if (err) {
+          console.log(err);
         }
+        else {
+          existsUpdate = !!rows.length;
+          if (existsUpdate) {
+            console.log('Read '+rows.length+' rows');
+            for (var i = 0; i < rows.length; i++) {
+              var row = rows[i];
+              var temp = {};
+              temp[header.timestamp] = row[header.timestamp];
+              temp[header.content] = row[header.content];
+              newContent.push(temp);
+            }
+            step();
+          }
+          else {
+            setTimeout(step, loopPeriod); //if no update, sleep for <loopPeriod> seconds before jumping
+          }
+        } 
       });
     },
     function setHeader(step) {
       //set header in archive as equivalent to input
       if (existsUpdate) {
-        archiveSheet.setHeaderRow(originalHeader, step);
+        try {
+          archiveSheet.setHeaderRow(originalHeader, step);
+        }
+        catch(err) {
+          console.log(err);
+        }
       } else {
         step();
       }
@@ -123,7 +139,9 @@ function loop(loopPeriod) {
       if (existsUpdate) {
         for (var i = 0; i < newContent.length; i++) {
           archiveDoc.addRow(1, newContent[i], function(err) {
-            if(err) { console.log(err); }
+            if(err) {
+              console.log(err);
+            }
           });
         }
       }
@@ -132,9 +150,9 @@ function loop(loopPeriod) {
     function postFacebook(step) {
       if (existsUpdate) {
         for (var i = 0; i < newContent.length; i++) {
+          var url = '/' + creds.fbPageId + '/feed';
           var dataOut = {};
           dataOut.message = newContent[i][header.content];
-          var url = '/' + creds.fbPageId + '/feed';
           FacebookApi.post(url, dataOut).then(function (data) {
             console.log(data.json);
           }).catch(function(e){
@@ -152,8 +170,18 @@ function loop(loopPeriod) {
         responseSheet.getRows({
           offset: 1
         }, function(err, rows) {
-          for (var i = rows.length - 1; i >= 0; i--) {
-            rows[i].del();
+          if (err) {
+            console.log(err);
+          }
+          else {
+            try {
+              for (var i = rows.length - 1; i >= 0; i--) {
+                rows[i].del();
+              }
+            }
+            catch(err){
+              console.log(err);
+            }
           }
         });
         existsUpdate = false;
